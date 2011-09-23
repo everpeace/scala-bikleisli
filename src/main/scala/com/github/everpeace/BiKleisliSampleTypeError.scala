@@ -26,6 +26,9 @@ class BiKleisliSampleTypeError {
    def OK: AccessTokenComonad[Person] => AuthorizationErrorMonad[Person] = in => in match{
        case (u,p) => Left(AccessRejectedError("rejected."))
      }
+
+   // ★☆の定義をBiKleisli.scalaから転載
+   // def ★☆[W[_], M[_], A, B](f: W[A] => M[B])(implicit w: Comonad[W], m: Monad[M], t: Distributes[W, M]): BiKleisli[W, M, A, B] = bikleisli(f)
    ★☆(OK)
 
    // 関数の型を生のタプルとEitherで定義。

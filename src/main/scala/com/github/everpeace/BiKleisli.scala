@@ -33,7 +33,7 @@ object BiKleislis {
 
   /* alias for constructor */
   // ★ for CoKleisli and ☆ for Kleisli in Scalaz
-  def ★☆[W[_], M[_], A, B](f: W[A] => M[B])(implicit w: Comonad[W], m: Monad[M], t: Distributes[W, M]) = bikleisli(f)
+  def ★☆[W[_], M[_], A, B](f: W[A] => M[B])(implicit w: Comonad[W], m: Monad[M], t: Distributes[W, M]): BiKleisli[W, M, A, B] = bikleisli(f)
 
   /**
    * implicit conversion: bikleisli to function
