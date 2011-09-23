@@ -27,16 +27,14 @@ class BiKleisliSampleTypeError {
        case (u,p) => Left(AccessRejectedError("rejected."))
      }
 
-   // ★☆の定義をBiKleisli.scalaから転載
-   // def ★☆[W[_], M[_], A, B](f: W[A] => M[B])(implicit w: Comonad[W], m: Monad[M], t: Distributes[W, M]): BiKleisli[W, M, A, B] = bikleisli(f)
-   ★☆(OK)
-
    // 関数の型を生のタプルとEitherで定義。
    // NG を★☆に渡した際にエラー
    def NG: (User, Person) => Either[AccessRejectedError, Person]
      = (u, p) => Left(AccessRejectedError("rejected"))
 
-   //これはOK
+   // これはOK
+   // ★☆の定義をBiKleisli.scalaから転載
+   // def ★☆[W[_], M[_], A, B](f: W[A] => M[B])(implicit w: Comonad[W], m: Monad[M], t: Distributes[W, M]): BiKleisli[W, M, A, B] = bikleisli(f)
    ★☆(OK)
 
    // エラー
