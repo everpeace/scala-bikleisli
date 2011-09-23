@@ -29,3 +29,7 @@ lib_managed
 src_managed
 target
 
+#ensime
+.ensime
+.ensime~
+

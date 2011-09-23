@@ -14,7 +14,7 @@ class BiKleisliSampleTypeError {
    import BiKleislis._
    import DistributiveLaws._
 
-   case class User(val name: String)                   //アクセストークンとして用いる
+   case class User(vname: String)                   //アクセストークンとして用いる
    case class Person(val name: String)                 // Person:サンプルエンティティ
    case class AccessRejectedError(val message: String) // アクセス拒否エラーメッセージ
 
@@ -47,5 +47,5 @@ class BiKleisliSampleTypeError {
    // found   : (User, Person) => Either[AccessRejectedError,Person]
    // required: (User, Person) => Either[AccessRejectedError,Person]
    ★☆[PartialApply1Of2[Tuple2,User]#Apply, PartialApply1Of2[Either,AccessRejectedError]#Apply,Person,Person](NG)
- }
+  }
 }
