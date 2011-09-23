@@ -1,7 +1,8 @@
 package com.github.everpeace
 
 /**
- * 
+ * original file is located at https://gist.github.com/1236981
+ * commented by @kmizu
  * @author everpeace _at_ gmail _dot_ com
  * @date 11/09/23
  */
@@ -14,7 +15,7 @@ class BiKleisliSampleTypeError {
    import BiKleislis._
    import DistributiveLaws._
 
-   case class User(vname: String)                   //アクセストークンとして用いる
+   case class User(val name: String)                   //アクセストークンとして用いる
    case class Person(val name: String)                 // Person:サンプルエンティティ
    case class AccessRejectedError(val message: String) // アクセス拒否エラーメッセージ
 
@@ -29,8 +30,9 @@ class BiKleisliSampleTypeError {
 
    // 関数の型を生のタプルとEitherで定義。
    // NG を★☆に渡した際にエラー
-   def NG: (User, Person) => Either[AccessRejectedError, Person]
-     = (u, p) => Left(AccessRejectedError("rejected"))
+   // by @kmizu: Scalaでは、「2要素のタプルを受け取る関数」と「2引数の関数」が異なるので、NGを「2要素のタプルを受け取る関数」を返すメソッドとして定義
+   def NG: ((User, Person)) => Either[AccessRejectedError, Person]
+     = { case (u, p) => Left(AccessRejectedError("rejected")) }
 
    // これはOK
    // ★☆の定義をBiKleisli.scalaから転載
@@ -40,12 +42,19 @@ class BiKleisliSampleTypeError {
    // エラー
    // found   : (User, Person) => Either[AccessRejectedError,Person]
    // required: ? => ?
-   ★☆(NG)
+   // by @kmizu: 
+   // 修正後は、普通の型エラーに変わる。これは、★☆の型コンストラクタパラメータであるW, Mをこのケースではうまく推論できないため
+   // Tuple2は2引数型コンストラクタなので、↓のように明示的に型コンストラクタを部分適用しないと推論できない
+   //★☆(NG)
 
    // エラー
    // ★☆に型パラメータを指定して読んでやると型が違うとメッセージがでるが、メッセージでは同じように見える。。。
    // found   : (User, Person) => Either[AccessRejectedError,Person]
    // required: (User, Person) => Either[AccessRejectedError,Person]
+   // by @kmizu: Scalaでは、「2要素のタプルを受け取る関数」と「2引数の関数」が異なるために、エラーが起きていた
+   // required は、正確には
+   // required: ((User, Person)) => Either[AccessRejectedError,Person]
+   // であるべき
    ★☆[PartialApply1Of2[Tuple2,User]#Apply, PartialApply1Of2[Either,AccessRejectedError]#Apply,Person,Person](NG)
-  }
+ }
 }
