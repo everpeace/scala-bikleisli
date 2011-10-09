@@ -61,4 +61,24 @@ object BiKleislis {
      */
     def compose[A, B, C](f: BiKleisli[W, M, B, C], g: BiKleisli[W, M, A, B]) = g ## f
   }
+
+  /**implicit bikleisli arrows */
+  implicit def BiKleisliArrow[W[_],M[_]](implicit w: Comonad[W], m: Monad[M], t: Distributes[W, M]):Arrow[({type λ[α, β] = BiKleisli[W, M, α, β]})#λ]
+  = new Arrow[({type λ[α, β] = BiKleisli[W, M, α, β]})#λ] {
+    def arrow[B, C](f: B => C) = ★☆( (wb:W[B]) => f(wb copure) pure )
+
+    /** (W[B] => M[C]) => W[(B,D)] => M[(C,D)] */
+    def first[B, C, D](a: ({type λ[α, β] = BiKleisli[W, M, α, β]})#λ[B, C]) =  ★☆((x:W[(B,D)]) => a(wfst(x)) >>= ( (c:C)=> (c , wsnd(x) copure) pure ) )
+
+    /** (W[B] => M[C]) => (W[(D,B)] => M[(D,C)]) */
+    def second[B, C, D](a: ({type λ[α, β] = BiKleisli[W, M, α, β]})#λ[B, C]) = ★☆((x:W[(D,B)]) => a(wsnd(x)) >>= ( (c:C)=> (wfst(x) copure, c ) pure ) )
+
+    /** W[(X,Y)] => W[X] */
+    def wfst[X,Y](t:W[(X,Y)]):W[X]= w.fmap(t,(x:(X,Y))=>x._1)
+
+    /** W[(X,Y)] => W[Y] */
+    def wsnd[X,Y](t:W[(X,Y)]):W[Y]= w.fmap(t,(x:(X,Y))=>x._2)
+
+    val category = BiKleisliCategory
+  }
 }

@@ -56,12 +56,17 @@ object BiKleisliSample {
 
     // BiKleisli 結合
     // (Tuple2Comonad, EitherMonadに対するDistributesはDistributiveLawsでimplicitに定義されている)
-    val searchAndUpdateToMrY = ★☆(withAccessCheck(search)) ## ★☆(withAccessCheck(updateMrY))
+    val searchAndUpdateToMrY = ★☆(withAccessCheck(search)) >>> ★☆(withAccessCheck(updateMrY))
 
     // alice はupdateが許可されていない。
-    println(searchAndUpdateToMrY(User("alice"), "alice")) // => Left(AccessRejectedError(alice is not granted.))
+    println(searchAndUpdateToMrY(User("alice"), "alice")) //Left(AccessRejectedError("alice is not granted."))
 
     // bob は両方認証成功し、処理成功。
-    println(searchAndUpdateToMrY(User("bob"), "bob"))     // => Right(Person(Mr.Y))
+    println(searchAndUpdateToMrY(User("bob"), "bob")) //Right(Person("Mr.Y"))
+
+    // BiKleisli は Arrowにもなる
+    val sample_arrow = ★☆(withAccessCheck(search)) &&& searchAndUpdateToMrY
+    println(sample_arrow(User("bob"),"bob")) //Right((Person("bob"),Person("Mr.Y")))
+    println(sample_arrow(User("alice"),"bob")) //Left(AccessRejectedError("alice is not granted."))
   }
 }
