@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" ></meta>
+        <title>com/github/everpeace/BiKleisliSampleTypeError.scala</title>
+        <script type="text/javascript" src="../../../jquery-all.js"></script>
+        <script type="text/javascript" src="../../../linked.js"></script>
+        <link rel="stylesheet" type="text/css" href="../../../style.css" title="Style"></link>
+    </head>
+    <body>
+        <pre>
+<span class="keyword">package</span> com.github.everpeace
+
+<span class="comment">/**
+ * original file is located at https://gist.github.com/1236981
+ * commented by @kmizu
+ * @author everpeace _at_ gmail _dot_ com
+ * @date 11/09/23
+ */</span>
+
+<span class="keyword">class</span> <a title="class BiKleisliSampleTypeError extends java.lang.Object with ScalaObject" id="9467">BiKleisliSampleTypeError</a> <a href="#9467" title="ScalaObject" class="delimiter">{</a>
+  <span class="keyword">def</span> <a title="(args: Array[String])Unit" id="52604">main</a><span class="delimiter">(</span><a title="Array[String]" id="52606">args</a>:<span title="Array[String]">Array</span><span class="delimiter">[</span>String<span class="delimiter">]</span><span class="delimiter">)</span>:<span title="Unit">Unit</span> = <span class="delimiter">{</span>
+   <span class="keyword">import</span> scalaz._
+   <span class="keyword">import</span> <a href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc.sxr/scalaz/Scalaz.scala.html#19350" title="object scalaz.Scalaz">Scalaz</a>._
+   <span class="keyword">import</span> scalaz.<a href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc.sxr/scalaz/Comonad.scala.html#10692" title="object scalaz.Comonad">Comonad</a>._ <span class="comment">// ScalazにComonadはミックスインされてないので。</span>
+   <span class="keyword">import</span> <a href="BiKleisli.scala.html#9457" title="object com.github.everpeace.BiKleislis">BiKleislis</a>._
+   <span class="keyword">import</span> <a href="DistributiveLaws.scala.html#9472" title="object com.github.everpeace.DistributiveLaws">DistributiveLaws</a>._
+
+   case <span class="keyword">class</span> <a title="class User extends java.lang.Object with ScalaObject with Product with Serializable" id="52648">User</a><a href="#52648" title="ScalaObject" class="delimiter">(</a><span class="keyword">val</span> <a title="String" id="53181">name</a>: <span title="String">String</span><span class="delimiter">)</span>                   <span class="comment">//アクセストークンとして用いる</span>
+   case <span class="keyword">class</span> <a title="class Person extends java.lang.Object with ScalaObject with Product with Serializable" id="52700">Person</a><a href="#52700" title="ScalaObject" class="delimiter">(</a><span class="keyword">val</span> <a title="String" id="53175">name</a>: <span title="String">String</span><span class="delimiter">)</span>                 <span class="comment">// Person:サンプルエンティティ</span>
+   case <span class="keyword">class</span> <a title="class AccessRejectedError extends java.lang.Object with ScalaObject with Product with Serializable" id="52752">AccessRejectedError</a><a href="#52752" title="ScalaObject" class="delimiter">(</a><span class="keyword">val</span> <a title="String" id="52793">message</a>: <span title="String">String</span><span class="delimiter">)</span> <span class="comment">// アクセス拒否エラーメッセージ</span>
+
+   <span class="keyword">type</span> <a title="[X](User, X)" id="52622">AccessTokenComonad</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="52623">X</a><span class="delimiter">]</span> = <span title="(User, X)" class="delimiter">(</span>User, X<span class="delimiter">)</span>                            <span class="comment">// Userを直積スタンピングするコモナド</span>
+   <span class="keyword">type</span> <a title="[X]Either[AccessRejectedError,X]" id="52624">AuthorizationErrorMonad</a><span class="delimiter">[</span><a title="&gt;: Nothing &lt;: Any" id="52625">X</a><span class="delimiter">]</span> = <span title="Either[AccessRejectedError,X]">Either</span><span class="delimiter">[</span>AccessRejectedError, X<span class="delimiter">]</span>  <span class="comment">// エラーを直和スタンピングするモナド</span>
+
+   <span class="comment">// 関数の型を上で宣言した型エイリアスで定義。</span>
+   <span class="comment">// OKを★☆に渡した際にはエラーにならない。</span>
+   <span class="keyword">def</span> <a title="=&gt; (User, Person) =&gt; AuthorizationErrorMonad[Person]" id="52626">OK</a>: AccessTokenComonad<span class="delimiter">[</span>Person<span class="delimiter">]</span> =&gt; AuthorizationErrorMonad<span class="delimiter">[</span>Person<span class="delimiter">]</span> = <a title="(User, Person)" id="52785">in</a> =&gt; <a href="#52785" title="(User, Person)">in</a> <span title="AuthorizationErrorMonad[Person]" class="keyword">match</span><span class="delimiter">{</span>
+       <span class="keyword">case</span> <span title="Left[AccessRejectedError,Nothing]" class="delimiter">(</span><a title="User" id="52788">u</a>,<a title="Person" id="52789">p</a><span class="delimiter">)</span> =&gt; <span title="(a: AccessRejectedError)Left[AccessRejectedError,Nothing]">Left</span><span class="delimiter">(</span><a href="#52752" title="(message: String)AccessRejectedError">AccessRejectedError</a><span class="delimiter">(</span><span title="java.lang.String(&quot;rejected.&quot;)" class="string">&quot;rejected.&quot;</span><span class="delimiter">)</span><span class="delimiter">)</span>
+     <span class="delimiter">}</span>
+
+   <span class="comment">// 関数の型を生のタプルとEitherで定義。</span>
+   <span class="comment">// NG を★☆に渡した際にエラー</span>
+   <span class="comment">// by @kmizu: Scalaでは、「2要素のタプルを受け取る関数」と「2引数の関数」が異なるので、NGを「2要素のタプルを受け取る関数」を返すメソッドとして定義</span>
+   <span class="keyword">def</span> <a title="=&gt; (User, Person) =&gt; Either[AccessRejectedError,Person]" id="52627">NG</a>: <span class="delimiter">(</span><span class="delimiter">(</span>User, Person<span class="delimiter">)</span><span class="delimiter">)</span> =&gt; Either<span class="delimiter">[</span>AccessRejectedError, Person<span class="delimiter">]</span>
+     = <a href="#52799" title="Either[AccessRejectedError,Person]" class="delimiter">{</a> <span class="keyword">case</span> <span title="Left[AccessRejectedError,Nothing]" class="delimiter">(</span><a title="User" id="52802">u</a>, <a title="Person" id="52803">p</a><span class="delimiter">)</span> =&gt; <span title="(a: AccessRejectedError)Left[AccessRejectedError,Nothing]">Left</span><span class="delimiter">(</span><a href="#52752" title="(message: String)AccessRejectedError">AccessRejectedError</a><span class="delimiter">(</span><span title="java.lang.String(&quot;rejected&quot;)" class="string">&quot;rejected&quot;</span><span class="delimiter">)</span><span class="delimiter">)</span> <span class="delimiter">}</span>
+
+   <span class="comment">// これはOK</span>
+   <span class="comment">// ★☆の定義をBiKleisli.scalaから転載</span>
+   <span class="comment">// def ★☆[W[_], M[_], A, B](f: W[A] =&gt; M[B])(implicit w: Comonad[W], m: Monad[M], t: Distributes[W, M]): BiKleisli[W, M, A, B] = bikleisli(f)</span>
+   <a href="BiKleisli.scala.html#24887" title="(f: (User, Person) =&gt; AuthorizationErrorMonad[Person])(implicit w: scalaz.Comonad[AccessTokenComonad], implicit m: scalaz.Monad[AuthorizationErrorMonad], implicit t: scalaz.Distributes[AccessTokenComonad,AuthorizationErrorMonad])com.github.everpeace.BiKleisli[AccessTokenComonad,AuthorizationErrorMonad,Person,Person]">★☆</a><a href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc.sxr/scalaz/Comonad.scala.html#121013" title="scalaz.Comonad[[α](User, α)]" class="delimiter">(</a><a href="#52626" title="=&gt; (User, Person) =&gt; AuthorizationErrorMonad[Person]">OK</a><span class="delimiter">)</span>
+
+   <span class="comment">// エラー</span>
+   <span class="comment">// found   : (User, Person) =&gt; Either[AccessRejectedError,Person]</span>
+   <span class="comment">// required: ? =&gt; ?</span>
+   <span class="comment">// by @kmizu: </span>
+   <span class="comment">// 修正後は、普通の型エラーに変わる。これは、★☆の型コンストラクタパラメータであるW, Mをこのケースではうまく推論できないため</span>
+   <span class="comment">// Tuple2は2引数型コンストラクタなので、↓のように明示的に型コンストラクタを部分適用しないと推論できない</span>
+   <span class="comment">//★☆(NG)</span>
+
+   <span class="comment">// エラー</span>
+   <span class="comment">// ★☆に型パラメータを指定して読んでやると型が違うとメッセージがでるが、メッセージでは同じように見える。。。</span>
+   <span class="comment">// found   : (User, Person) =&gt; Either[AccessRejectedError,Person]</span>
+   <span class="comment">// required: (User, Person) =&gt; Either[AccessRejectedError,Person]</span>
+   <span class="comment">// by @kmizu: Scalaでは、「2要素のタプルを受け取る関数」と「2引数の関数」が異なるために、エラーが起きていた</span>
+   <span class="comment">// required は、正確には</span>
+   <span class="comment">// required: ((User, Person)) =&gt; Either[AccessRejectedError,Person]</span>
+   <span class="comment">// であるべき</span>
+   <a href="BiKleisli.scala.html#24887" title="[W[_], M[_], A, B](f: W[A] =&gt; M[B])(implicit w: scalaz.Comonad[W], implicit m: scalaz.Monad[M], implicit t: scalaz.Distributes[W,M])com.github.everpeace.BiKleisli[W,M,A,B]">★☆</a><span title="(f: (User, Person) =&gt; Either[AccessRejectedError,Person])(implicit w: scalaz.Comonad[[B](User, B)], implicit m: scalaz.Monad[[B]Either[AccessRejectedError,B]], implicit t: scalaz.Distributes[[B](User, B),[B]Either[AccessRejectedError,B]])com.github.everpeace.BiKleisli[[B](User, B),[B]Either[AccessRejectedError,B],Person,Person]" class="delimiter">[</span>PartialApply1Of2<span class="delimiter">[</span>Tuple2,User<span class="delimiter">]</span>#<span title="[B](User, B)">Apply</span>, PartialApply1Of2<span class="delimiter">[</span>Either,AccessRejectedError<span class="delimiter">]</span>#<span title="[B]Either[AccessRejectedError,B]">Apply</span>,<a href="#52700" title="Person">Person</a>,<a href="#52700" title="Person">Person</a><span class="delimiter">]</span><a href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc.sxr/scalaz/Comonad.scala.html#121013" title="scalaz.Comonad[[α](User, α)]" class="delimiter">(</a><a href="#52627" title="=&gt; (User, Person) =&gt; Either[AccessRejectedError,Person]">NG</a><span class="delimiter">)</span>
+ <span class="delimiter">}</span>
+<span class="delimiter">}</span>
+        </pre>
+    </body>
+</html>
