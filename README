@@ -1,7 +1,4 @@
 Bi-Kleisli implementation in Scala using Scalaz.
 
-* BiKleiseli: http://github.com/everpeace/scala-bikleisli/blob/master/src/main/scala/com/github/everpeace/BiKleisli.scala
-* DistributiveLaws: http://github.com/everpeace/scala-bikleisli/blob/master/src/main/scala/com/github/everpeace/DistributiveLaws.scala
-* BiKleisliSample: http://github.com/everpeace/scala-bikleisli/blob/master/src/main/scala/com/github/everpeace/BiKleisliSample.scala
-
+http://everpeace.github.com/scala-bikleisli
 
