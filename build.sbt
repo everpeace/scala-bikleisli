@@ -13,3 +13,8 @@ libraryDependencies += "org.scalaz" %% "scalaz-core" % "6.0.3" withSources()
 
 //compile options
 scalacOptions ++= Seq("-unchecked", "-deprecation")
+
+//scala xray (sxr)
+addCompilerPlugin("org.scala-tools.sxr" % "sxr_2.9.0" % "0.2.7")
+
+scalacOptions <+= scalaSource in Compile map { "-P:sxr:base-directory:" + _.getAbsolutePath }
